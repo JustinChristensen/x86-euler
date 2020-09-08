@@ -1,7 +1,7 @@
 SOURCES := \
 01-multiples_of_3_and_5.s
 
-AS_FLAGS :=
+AS_FLAGS := -static -Wall -Wextra -g
 LD_FLAGS := -static
 
 define gen_rule
