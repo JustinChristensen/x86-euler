@@ -3,7 +3,7 @@ SOURCES := \
 NOTES := notes
 
 AS := as
-AS_FLAGS := -static -Wall -Wextra
+AS_FLAGS := -static -Wall -Wextra -g
 LD := ld
 LD_FLAGS := -static
 OBJDUMP := objdump

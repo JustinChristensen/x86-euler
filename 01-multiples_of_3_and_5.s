@@ -10,6 +10,7 @@ exit:
     movl $SYS_EXIT, %eax
     movl $SUCCESS, %edi
     syscall
+    retq
 
 write:
     movl $STDOUT, %edi
@@ -17,13 +18,11 @@ write:
     movl $hello_len, %edx
     movl $SYS_WRITE, %eax
     syscall
-    jmp *%r8
+    retq
 
 start:
-    leaq do_exit(%rip), %r8
-    jmp write
-do_exit:
-    jmp exit
+    callq write
+    callq exit
 
 .data
 
