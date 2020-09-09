@@ -1,4 +1,4 @@
-.intel_syntax
+.text
 .global start
 
 SYS_EXIT = 0x2000001
@@ -7,20 +7,20 @@ SUCCESS = 100
 STDOUT = 1
 
 exit:
-    mov eax, SYS_EXIT
-    mov edi, SUCCESS
+    movl $SYS_EXIT, %eax
+    movl $SUCCESS, %edi
     syscall
 
 write:
-    mov edi, STDOUT
-    lea rsi, [rip + hello]
-    mov edx, [rip + hello_len]
-    mov eax, SYS_WRITE
+    movl $STDOUT, %edi
+    leaq hello(%rip), %rsi
+    movl $hello_len, %edx
+    movl $SYS_WRITE, %eax
     syscall
-    jmp r8
+    jmp *%r8
 
 start:
-    lea r8, [rip + do_exit]
+    leaq do_exit(%rip), %r8
     jmp write
 do_exit:
     jmp exit
@@ -29,5 +29,4 @@ do_exit:
 
 hello:
     .ascii "hello, world!\n"
-hello_len:
-    .long .  - hello
+hello_len = . - hello

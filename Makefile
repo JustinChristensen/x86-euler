@@ -3,11 +3,11 @@ SOURCES := \
 NOTES := notes
 
 AS := as
-AS_FLAGS := -static -Wall -Wextra -g
+AS_FLAGS := -static -Wall -Wextra
 LD := ld
 LD_FLAGS := -static
 OBJDUMP := objdump
-OBJDUMP_FLAGS := --x86-asm-syntax=intel --print-imm-hex
+OBJDUMP_FLAGS := --print-imm-hex
 
 define gen_rule
 TARGETS += $1
