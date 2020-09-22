@@ -43,17 +43,17 @@ uint_to_str:
     movl $1, %r10d               # length
     movb $'\n', %dl              # append newline
     movb %dl, (%rdi)
-    movl $0, %edx
+    xorl %edx, %edx
     movl %esi, %eax              # edx:eax
     movl $10, %r11d              # divisor
 uint_to_str_loop:
     decq %rdi                    # pointer--
     incl %r10d                   # length++
     divl %r11d
-    addl $'0', %edx
+    addb $'0', %dl
     movb %dl, (%rdi)
-    movl $0, %edx                # clear edx, otherwise quotients >= 2^w result in a floating point exception with DIV
-    cmpl $0, %eax
+    xorl %edx, %edx                # clear edx, otherwise quotients >= 2^w result in a floating point exception with DIV
+    testl %eax, %eax
     jg uint_to_str_loop          # quotient > 0
     movl %r10d, %eax             # return length
     retq
@@ -62,14 +62,14 @@ uint_to_str_loop:
 # eax - dividend
 # edi - divisor
 divides:
-    movl $0, %edx                # DIV divides edx:eax by src, so we've gotta zero edx
+    xorl %edx, %edx                # DIV divides edx:eax by src, so we've gotta zero edx
     divl %edi
-    cmpl $0, %edx
+    testl %edx, %edx
     retq
 
 # eax = sum [i | i <- [3..1000], i `mod` 3 == 0 || i `mod` 5 == 0]
 sum_multiples:
-    movl $0, %r10d
+    xorl %ebx, %ebx              # sum
     movl $3, %ecx
 sum_multiples_loop:
     movl %ecx, %eax
@@ -84,12 +84,12 @@ sum_multiples_loop:
 
     jmp sum_multiples_loop_test
 sum_multiples_loop_add:
-    add %ecx, %r10d              # sum += i
+    add %ecx, %ebx              # sum += i
 sum_multiples_loop_test:
     incl %ecx                    # i++
     cmpl $1000, %ecx
     jb sum_multiples_loop       # i <= 1000
-    movl %r10d, %eax
+    movl %ebx, %eax
     retq
 
 start:
