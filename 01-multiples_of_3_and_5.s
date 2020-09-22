@@ -28,36 +28,39 @@ exit:
     syscall
     retq
 
-# write:
-#     movl $STDOUT, %edi
-#     leaq hello(%rip), %rsi
-#     movl $hello_len, %edx
-#     movl $SYS_WRITE, %eax
-#     syscall
-#     retq
+# edx - string length
+# rsi - string pointer
+write:
+    movl $STDOUT, %edi
+    movl $SYS_WRITE, %eax
+    syscall
+    retq
 
+# length = to_str rdi esi
+# rdi - pointer to string storage
+# esi - unsigned integer to stringify
 uint_to_str:
-    movq %rsp, %rbp
-    movl $1, %r10d          # account for newline
+    movl $1, %r10d               # length
     movl $0, %edx
-    movl %edi, %eax
-    movl $10, %edi
+    movl %esi, %eax              # edx:eax
+    movl $10, %r11d              # divisor
 uint_to_str_loop:
-    divl %edi
-    addl '0', %edx
+    divl %r11d
+    addl $'0', %edx
     movb %dl, (%rdi)
     incq %rdi
-    incl %r10d
+    incl %r10d                   # length++
     movl $0, %edx
     cmpl $0, %eax
-    jge uint_to_str_loop
-    movb '\n', %dl          # append newline
+    jg uint_to_str_loop          # quotient > 0
+    movb $'\n', %dl              # append newline
     movb %dl, (%rdi)
-    movl %r10d, %eax
-    movq %rbp, %rsp
+    movl %r10d, %eax             # return length
     retq
 
 # eax `mod` edi
+# eax - dividend
+# edi - divisor
 divides:
     movl $0, %edx                # DIV divides edx:eax by src, so we've gotta zero edx
     divl %edi
@@ -92,17 +95,17 @@ sum_multiples_loop_test:
 start:
     callq sum_multiples
 
-    subq $16, %rsp              # make space for the integer ascii string
+    subq $16, %rsp               # make space for the integer ascii string
+
     movq %rsp, %rdi
     movl %eax, %esi
-    callq uint_to_str
+    callq uint_to_str            # convert answer to string
 
-    addq $16, %rsp
+    movq %rsp, %rsi
+    movl %eax, %edx
+    callq write                  # write to stdout
+
+    addq $16, %rsp               # reclaim string storage
 
     callq exit
 
-.data
-
-# hello:
-#     .ascii "hello, world!\n"
-# hello_len = . - hello
