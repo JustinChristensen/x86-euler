@@ -17,22 +17,22 @@ parameter     1    2    3    4    5    6      return
 register    rdi  rsi  rdx  rcx   r8   r9      rdx:rax
 */
 
-SYS_EXIT = 0x2000001
-SYS_WRITE = 0x2000004
-SUCCESS = 0
-STDOUT = 1
+L_SYS_EXIT = 0x2000001
+L_SYS_WRITE = 0x2000004
+L_SUCCESS = 0
+L_STDOUT = 1
 
 exit:
-    movl $SYS_EXIT, %eax
-    movl $SUCCESS, %edi
+    movl $L_SYS_EXIT, %eax
+    movl $L_SUCCESS, %edi
     syscall
     retq
 
 # edx - string length
 # rsi - string pointer
 write:
-    movl $STDOUT, %edi
-    movl $SYS_WRITE, %eax
+    movl $L_STDOUT, %edi
+    movl $L_SYS_WRITE, %eax
     syscall
     retq
 
@@ -46,7 +46,7 @@ uint_to_str:
     xorl %edx, %edx
     movl %esi, %eax              # edx:eax
     movl $10, %r11d              # divisor
-uint_to_str_loop:
+Luint_to_str_loop:
     decq %rdi                    # pointer--
     incl %r10d                   # length++
     divl %r11d
@@ -54,7 +54,7 @@ uint_to_str_loop:
     movb %dl, (%rdi)
     xorl %edx, %edx                # clear edx, otherwise quotients >= 2^w result in a floating point exception with DIV
     testl %eax, %eax
-    jg uint_to_str_loop          # quotient > 0
+    jg Luint_to_str_loop          # quotient > 0
     movl %r10d, %eax             # return length
     retq
 
@@ -71,24 +71,24 @@ divides:
 sum_multiples:
     xorl %ebx, %ebx              # sum
     movl $3, %ecx
-sum_multiples_loop:
+Lsum_multiples_loop:
     movl %ecx, %eax
     movl $3, %edi                # i % 3 == 0 || i % 5 == 0
     callq divides
-    je sum_multiples_loop_add
+    je Lsum_multiples_loop_add
 
     movl %ecx, %eax
     movl $5, %edi
     callq divides
-    je sum_multiples_loop_add
+    je Lsum_multiples_loop_add
 
-    jmp sum_multiples_loop_test
-sum_multiples_loop_add:
+    jmp Lsum_multiples_loop_test
+Lsum_multiples_loop_add:
     add %ecx, %ebx              # sum += i
-sum_multiples_loop_test:
+Lsum_multiples_loop_test:
     incl %ecx                    # i++
     cmpl $1000, %ecx
-    jb sum_multiples_loop       # i <= 1000
+    jb Lsum_multiples_loop       # i <= 1000
     movl %ebx, %eax
     retq
 
