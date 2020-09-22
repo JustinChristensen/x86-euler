@@ -41,20 +41,20 @@ write:
 # esi - unsigned integer to stringify
 uint_to_str:
     movl $1, %r10d               # length
+    movb $'\n', %dl              # append newline
+    movb %dl, (%rdi)
     movl $0, %edx
     movl %esi, %eax              # edx:eax
     movl $10, %r11d              # divisor
 uint_to_str_loop:
+    decq %rdi                    # pointer--
+    incl %r10d                   # length++
     divl %r11d
     addl $'0', %edx
     movb %dl, (%rdi)
-    incq %rdi
-    incl %r10d                   # length++
-    movl $0, %edx
+    movl $0, %edx                # clear edx, otherwise quotients >= 2^w result in a floating point exception with DIV
     cmpl $0, %eax
     jg uint_to_str_loop          # quotient > 0
-    movb $'\n', %dl              # append newline
-    movb %dl, (%rdi)
     movl %r10d, %eax             # return length
     retq
 
@@ -88,20 +88,19 @@ sum_multiples_loop_add:
 sum_multiples_loop_test:
     incl %ecx                    # i++
     cmpl $1000, %ecx
-    jbe sum_multiples_loop       # i <= 1000
+    jb sum_multiples_loop       # i <= 1000
     movl %r10d, %eax
     retq
 
 start:
     callq sum_multiples
 
-    subq $16, %rsp               # make space for the integer ascii string
-
     movq %rsp, %rdi
+    subq $16, %rsp               # make space for the integer ascii string
     movl %eax, %esi
     callq uint_to_str            # convert answer to string
 
-    movq %rsp, %rsi
+    movq %rdi, %rsi
     movl %eax, %edx
     callq write                  # write to stdout
 
