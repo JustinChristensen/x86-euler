@@ -1,5 +1,5 @@
-.text
 .global start
+.p2align 4
 
 /*
 general-purpose registers

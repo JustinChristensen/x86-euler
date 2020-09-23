@@ -17,6 +17,7 @@ ifndef NO_DEBUG
 	AS_FLAGS += -g
 endif
 
+.PHONY: all
 all: $(S_PROG)
 
 $(S_PROG): $(S_SOURCE)
@@ -33,7 +34,7 @@ endif
 
 ifdef C_SOURCE
 optimized.s: $(C_SOURCE)
-	$(CC) $(CFLAGS) -S -o $@ $^
+	$(CC) -O -S -o $@ $^
 endif
 
 .PHONY: clean
