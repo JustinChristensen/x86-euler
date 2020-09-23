@@ -1,4 +1,11 @@
-*
+.DS_Store
+*.o
+*.dSYM
+src/*/*
+notes/
+!src/*/*.s
+!src/*/*.c
+!src/*/.*
 !Makefile
-!*.s
-!.*
+optimized.s
+/*.s
