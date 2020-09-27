@@ -17,6 +17,14 @@ parameter     1    2    3    4    5    6      return
 register    rdi  rsi  rdx  rcx   r8   r9      rdx:rax
 */
 
+/*
+
+Improvements to consider:
+1. Use multiplicative inverse instead of division
+2. Conditionally set the addend to 0 when neither i % 3 or i % 5 == 0 instead of jumping
+
+*/
+
 L_SYS_EXIT = 0x2000001
 L_SYS_WRITE = 0x2000004
 L_SUCCESS = 0
@@ -73,11 +81,11 @@ sum_multiples:
     movl $3, %ecx
 Lsum_multiples_loop:
     movl %ecx, %eax
-    movl $3, %edi                # i % 3 == 0 || i % 5 == 0
+    movl $3, %edi                # i % 3 == 0
     callq divides
     je Lsum_multiples_loop_add
-
-    movl %ecx, %eax
+    # ||
+    movl %ecx, %eax              # i % 5 == 0
     movl $5, %edi
     callq divides
     je Lsum_multiples_loop_add

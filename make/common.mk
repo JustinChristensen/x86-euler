@@ -10,7 +10,8 @@ ifdef BYTE_ALIGN
 	LD_FLAGS += -segalign 1
 endif
 
-CFLAGS := -O
+CFLAGS := -O -Wall -Wextra
+OP_CFLAGS := $(CFLAGS) -fno-verbose-asm
 
 ifndef NO_DEBUG
     CFLAGS += -g
@@ -34,7 +35,7 @@ endif
 
 ifdef C_SOURCE
 optimized.s: $(C_SOURCE)
-	$(CC) -O -S -o $@ $^
+	$(CC) $(OP_CFLAGS) -S -o $@ $^
 endif
 
 .PHONY: clean
