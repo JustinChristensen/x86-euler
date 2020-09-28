@@ -1,8 +1,9 @@
+TOPDIR ?= .
 S_SOURCE ?= main.s
 C_SOURCE ?= main.c
 
 AS := as
-AS_FLAGS := -static -Wall -Wextra
+AS_FLAGS := -static -I$(TOPDIR)/include -Wall -Wextra
 
 LD := ld
 LD_FLAGS := -static
