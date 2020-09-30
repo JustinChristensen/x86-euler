@@ -1,5 +1,5 @@
 TOPDIR := ../..
-S_PROG := even_fibs
+S_PROG := largest_prime
 C_PROG := $(S_PROG)_c
 
 include $(TOPDIR)/make/common.mk

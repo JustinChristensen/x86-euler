@@ -4,6 +4,18 @@
 
 #define N 600851475143
 
+char *itoa(char *buf, size_t len, unsigned n) {
+    if (len <= 1 || !buf) return NULL;
+
+    char *s = &buf[len - 1];
+    *s-- = '\0';
+
+    do *s-- = '0' + n % 10;
+    while (n /= 10);
+
+    return ++s;
+}
+
 void fermats() {
     // a^2 - n = b^2
     unsigned long n = N,
@@ -39,5 +51,13 @@ int main() {
     fermats();
     factors(N);
     factors(28);
+
+    char buf[16];
+    char *s;
+    if ((s = itoa(buf, sizeof buf, 3104590)))
+        printf("itoa: %s\n", s);
+    else
+        fprintf(stderr, "conversion error\n");
+
     return 0;
 }
