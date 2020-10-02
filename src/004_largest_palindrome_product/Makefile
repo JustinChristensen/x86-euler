@@ -1,8 +1,8 @@
 TOPDIR := ../..
-S_PROG := multiples_of_3_and_5
+S_PROG := largest_palindrome
 C_PROG := $(S_PROG)_c
 
 include $(TOPDIR)/make/common.mk
 
 test: $(S_PROG)
-	./$(S_PROG) | grep '233168' &> /dev/null
+	./$(S_PROG) | grep '906609' &> /dev/null

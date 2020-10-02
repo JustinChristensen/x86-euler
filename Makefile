@@ -9,6 +9,9 @@ all: $(TARGETS)
 $(TARGETS):
 	$(MAKE) -C $@ $(MAKECMDGOALS)
 
+.PHONY: test
+test: $(TARGETS)
+
 .PHONY: clean
 clean: $(TARGETS)
 

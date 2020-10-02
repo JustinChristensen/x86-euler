@@ -32,7 +32,7 @@ start:
     movq %rsp, %rdi
     movl %eax, %esi
     subq $16, %rsp          # make space for integer conversion
-    callq uint_to_str
+    callq uint_to_str_nl
 
     movl %eax, %edx         # length
     movq %rdi, %rsi         # string pointer

@@ -53,7 +53,8 @@ start:
     movq %rsp, %rdi
     movl %eax, %esi
     subq $16, %rsp               # make space for the integer ascii string
-    callq uint_to_str            # convert answer to string
+
+    callq uint_to_str_nl         # convert answer to string
 
     movq %rdi, %rsi
     movl %eax, %edx
