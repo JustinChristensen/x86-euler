@@ -24,21 +24,21 @@ Lsum_even_fibs_loop:
     cmpl $4000000, %ecx
     jle Lsum_even_fibs_loop
 
-    retq
+    ret
 
 start:
-    callq sum_even_fibs
+    call sum_even_fibs
 
     movq %rsp, %rdi
     movl %eax, %esi
     subq $16, %rsp          # make space for integer conversion
-    callq uint_to_str_nl
+    call uint_to_str_nl
 
     movl %eax, %edx         # length
     movq %rdi, %rsi         # string pointer
-    callq write
+    call write
 
     addq $16, %rsp          # reclaim stack space
 
-    callq exit
+    call exit
 

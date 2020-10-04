@@ -20,7 +20,7 @@ divides:
     xorl %edx, %edx                # DIV divides edx:eax by src, so we've gotta zero edx
     divl %edi
     testl %edx, %edx
-    retq
+    ret
 
 # eax = sum [i | i <- [3..1000], i `mod` 3 == 0 || i `mod` 5 == 0]
 sum_multiples:
@@ -29,12 +29,12 @@ sum_multiples:
 Lsum_multiples_loop:
     movl %ecx, %eax
     movl $3, %edi                # i % 3 == 0
-    callq divides
+    call divides
     je Lsum_multiples_loop_add
     # ||
     movl %ecx, %eax              # i % 5 == 0
     movl $5, %edi
-    callq divides
+    call divides
     je Lsum_multiples_loop_add
 
     jmp Lsum_multiples_loop_test
@@ -45,22 +45,22 @@ Lsum_multiples_loop_test:
     cmpl $1000, %ecx
     jb Lsum_multiples_loop       # i <= 1000
     movl %ebx, %eax
-    retq
+    ret
 
 start:
-    callq sum_multiples
+    call sum_multiples
 
     movq %rsp, %rdi
     movl %eax, %esi
     subq $16, %rsp               # make space for the integer ascii string
 
-    callq uint_to_str_nl         # convert answer to string
+    call uint_to_str_nl         # convert answer to string
 
     movq %rdi, %rsi
     movl %eax, %edx
-    callq write                  # write to stdout
+    call write                  # write to stdout
 
     addq $16, %rsp               # reclaim string storage
 
-    callq exit
+    call exit
 

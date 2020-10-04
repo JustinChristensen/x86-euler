@@ -30,22 +30,22 @@ Llargest_prime_loop_body:
 
     movq %r10, %rax
 Llargest_prime_end:
-    retq
+    ret
 
 start:
     movq $600851475143, %rdi
-    callq largest_prime
+    call largest_prime
 
     movq %rsp, %rdi
     movl %eax, %esi
     subq $16, %rsp          # make space for integer conversion
-    callq uint_to_str_nl
+    call uint_to_str_nl
 
     movl %eax, %edx         # length
     movq %rdi, %rsi         # string pointer
-    callq write
+    call write
 
     addq $16, %rsp          # reclaim stack space
 
-    callq exit
+    call exit
 

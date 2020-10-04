@@ -21,7 +21,7 @@ register    rdi  rsi  rdx  rcx   r8   r9      rdx:rax
 .include "io.s"
 .include "string.s"
 
-smallest_multiple:
+compute_powers:
     leaq powers(%rip), %rdi             # powers
     movl $2, %ebx                       # i
 Lsmallest_multiple_loop:
@@ -77,7 +77,7 @@ Lcompute_lcm_multiple_test:
     ret
 
 start:
-    call smallest_multiple
+    call compute_powers
     call compute_lcm
 
     movq %rsp, %rdi
