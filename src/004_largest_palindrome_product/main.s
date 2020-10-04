@@ -13,7 +13,6 @@ is_palindrome:
     jz Lis_palindrome_end       # jump to end for 0 length string
 
     movq %rax, %r8              # for below test
-    movq %rax, %rdx             # low bound
     shrq %rax                   # high bound
     movq %rax, %rdx             # low bound
     decq %rdx
