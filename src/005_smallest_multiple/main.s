@@ -23,7 +23,6 @@ register    rdi  rsi  rdx  rcx   r8   r9      rdx:rax
 
 smallest_multiple:
     leaq powers(%rip), %rdi             # powers
-    xorq %rcx, %rcx                     # clear the high order bytes for the address calculation
     movl $2, %ebx                       # i
 Lsmallest_multiple_loop:
     movl $2, %ecx                       # j - divisor
@@ -35,11 +34,11 @@ Lsmallest_multiple_inner:
     movl %r8d, %eax
     jmp Lsmallest_multiple_divide_test
 Lsmallest_multiple_divide_loop:
-    movl %eax, %r8d                     # n = n / j
+    movl %eax, %r8d                     # commit n = n / j
     incl %esi
 Lsmallest_multiple_divide_test:
     xorl %edx, %edx
-    divl %ecx
+    divl %ecx                           # n / j
     testl %edx, %edx                    # n % j == 0
     jz Lsmallest_multiple_divide_loop
 
@@ -57,11 +56,10 @@ Lsmallest_multiple_loop_test:
     incl %ebx
     cmpl $20, %ebx
     jle Lsmallest_multiple_loop
-    retq
+    ret
 
 compute_lcm:
     leaq powers(%rip), %rdi             # powers
-    xorq %rcx, %rcx                     # clear the high order bytes for the address calculation
     movl $2, %ecx                       # i
     movl $1, %eax                       # multiple
 Lcompute_lcm_loop:
@@ -76,23 +74,23 @@ Lcompute_lcm_multiple_test:
     incl %ecx
     cmpl $20, %ecx
     jle Lcompute_lcm_loop
-    retq
+    ret
 
 start:
-    callq smallest_multiple
-    callq compute_lcm
+    call smallest_multiple
+    call compute_lcm
 
     movq %rsp, %rdi
     subq $16, %rsp
     movl %eax, %esi
-    callq uint_to_str_nl
+    call uint_to_str_nl
 
     movl %eax, %edx
     movq %rdi, %rsi
-    callq write
+    call write
 
     addq $16, %rsp
-    callq exit
+    call exit
 
 .data
 powers:
