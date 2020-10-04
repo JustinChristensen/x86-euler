@@ -8,44 +8,44 @@
 # rdi - the number to compute the largest prime factor for
 # rax - largest prime factor result
 largest_prime:
-    movq %rdi, %rbx                 # n
-    cmpq $1, %rbx
-    cmovleq %rbx, %rax
+    mov %rdi, %rbx                 # n
+    cmp $1, %rbx
+    cmovle %rbx, %rax
     jle Llargest_prime_end
 
-    movq $2, %r10
+    mov $2, %r10
 Llargest_prime_loop:
-    movq %rbx, %rax                 # only commit the change to the dividend after finding the next factor
-    xorq %rdx, %rdx
-    divq %r10
-    testq %rdx, %rdx
+    mov %rbx, %rax                 # only commit the change to the dividend after finding the next factor
+    xor %rdx, %rdx
+    div %r10
+    test %rdx, %rdx
     jz Llargest_prime_loop_body
-    incq %r10
+    inc %r10
     jmp Llargest_prime_loop
 
 Llargest_prime_loop_body:
-    movq %rax, %rbx
-    cmpq $1, %rbx
+    mov %rax, %rbx
+    cmp $1, %rbx
     jg Llargest_prime_loop
 
-    movq %r10, %rax
+    mov %r10, %rax
 Llargest_prime_end:
     ret
 
 start:
-    movq $600851475143, %rdi
+    mov $600851475143, %rdi
     call largest_prime
 
-    movq %rsp, %rdi
-    movl %eax, %esi
-    subq $16, %rsp          # make space for integer conversion
+    mov %rsp, %rdi
+    mov %eax, %esi
+    sub $16, %rsp          # make space for integer conversion
     call uint_to_str_nl
 
-    movl %eax, %edx         # length
-    movq %rdi, %rsi         # string pointer
+    mov %eax, %edx         # length
+    mov %rdi, %rsi         # string pointer
     call write
 
-    addq $16, %rsp          # reclaim stack space
+    add $16, %rsp          # reclaim stack space
 
     call exit
 

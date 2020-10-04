@@ -6,7 +6,6 @@
 Improvements to consider:
 1. Use multiplicative inverse instead of division
 2. Conditionally set the addend to 0 when neither i % 3 or i % 5 == 0 instead of jumping
-
 */
 
 .include "exit.s"
@@ -17,23 +16,23 @@ Improvements to consider:
 # eax - dividend
 # edi - divisor
 divides:
-    xorl %edx, %edx                # DIV divides edx:eax by src, so we've gotta zero edx
-    divl %edi
-    testl %edx, %edx
+    xor %edx, %edx                # DIV divides edx:eax by src, so we've gotta zero edx
+    div %edi
+    test %edx, %edx
     ret
 
 # eax = sum [i | i <- [3..1000], i `mod` 3 == 0 || i `mod` 5 == 0]
 sum_multiples:
-    xorl %ebx, %ebx              # sum
-    movl $3, %ecx
+    xor %ebx, %ebx              # sum
+    mov $3, %ecx
 Lsum_multiples_loop:
-    movl %ecx, %eax
-    movl $3, %edi                # i % 3 == 0
+    mov %ecx, %eax
+    mov $3, %edi                # i % 3 == 0
     call divides
     je Lsum_multiples_loop_add
     # ||
-    movl %ecx, %eax              # i % 5 == 0
-    movl $5, %edi
+    mov %ecx, %eax              # i % 5 == 0
+    mov $5, %edi
     call divides
     je Lsum_multiples_loop_add
 
@@ -41,26 +40,26 @@ Lsum_multiples_loop:
 Lsum_multiples_loop_add:
     add %ecx, %ebx              # sum += i
 Lsum_multiples_loop_test:
-    incl %ecx                    # i++
-    cmpl $1000, %ecx
+    inc %ecx                    # i++
+    cmp $1000, %ecx
     jb Lsum_multiples_loop       # i <= 1000
-    movl %ebx, %eax
+    mov %ebx, %eax
     ret
 
 start:
     call sum_multiples
 
-    movq %rsp, %rdi
-    movl %eax, %esi
-    subq $16, %rsp               # make space for the integer ascii string
+    mov %rsp, %rdi
+    mov %eax, %esi
+    sub $16, %rsp               # make space for the integer ascii string
 
     call uint_to_str_nl         # convert answer to string
 
-    movq %rdi, %rsi
-    movl %eax, %edx
+    mov %rdi, %rsi
+    mov %eax, %edx
     call write                  # write to stdout
 
-    addq $16, %rsp               # reclaim string storage
+    add $16, %rsp               # reclaim string storage
 
     call exit
 

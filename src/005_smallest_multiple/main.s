@@ -22,57 +22,57 @@ register    rdi  rsi  rdx  rcx   r8   r9      rdx:rax
 .include "string.s"
 
 compute_powers:
-    leaq powers(%rip), %rdi             # powers
-    movl $2, %ebx                       # i
+    lea powers(%rip), %rdi             # powers
+    mov $2, %ebx                       # i
 Lsmallest_multiple_loop:
-    movl $2, %ecx                       # j - divisor
-    movl %ebx, %r8d                     # n - number to divide
+    mov $2, %ecx                       # j - divisor
+    mov %ebx, %r8d                     # n - number to divide
 Lsmallest_multiple_inner:
     cmpb $0, (%rdi, %rcx)               # skip compounds
     jz Lsmallest_multiple_inner_test
-    xorl %esi, %esi                     # p
-    movl %r8d, %eax
+    xor %esi, %esi                     # p
+    mov %r8d, %eax
     jmp Lsmallest_multiple_divide_test
 Lsmallest_multiple_divide_loop:
-    movl %eax, %r8d                     # commit n = n / j
-    incl %esi
+    mov %eax, %r8d                     # commit n = n / j
+    inc %esi
 Lsmallest_multiple_divide_test:
-    xorl %edx, %edx
-    divl %ecx                           # n / j
-    testl %edx, %edx                    # n % j == 0
+    xor %edx, %edx
+    div %ecx                           # n / j
+    test %edx, %edx                    # n % j == 0
     jz Lsmallest_multiple_divide_loop
 
-    movzbl (%rdi, %rcx), %edx           # powers[j]
-    cmpl %esi, %edx                     # powers[j] - p
-    cmovgl %edx, %esi                   # powers[j] = p > powers[j] ? p : powers[j]
+    movzb (%rdi, %rcx), %edx           # powers[j]
+    cmp %esi, %edx                     # powers[j] - p
+    cmovg %edx, %esi                   # powers[j] = p > powers[j] ? p : powers[j]
     movb %sil, (%rdi, %rcx)
 Lsmallest_multiple_inner_test:
-    testl %r8d, %r8d
+    test %r8d, %r8d
     jz Lsmallest_multiple_loop_test     # check n
-    incl %ecx
-    cmpl $20, %ecx
+    inc %ecx
+    cmp $20, %ecx
     jle Lsmallest_multiple_inner
 Lsmallest_multiple_loop_test:
-    incl %ebx
-    cmpl $20, %ebx
+    inc %ebx
+    cmp $20, %ebx
     jle Lsmallest_multiple_loop
     ret
 
 compute_lcm:
-    leaq powers(%rip), %rdi             # powers
-    movl $2, %ecx                       # i
-    movl $1, %eax                       # multiple
+    lea powers(%rip), %rdi             # powers
+    mov $2, %ecx                       # i
+    mov $1, %eax                       # multiple
 Lcompute_lcm_loop:
-    movzbl (%rdi, %rcx), %ebx              # p
+    movzb (%rdi, %rcx), %ebx              # p
     jmp Lcompute_lcm_multiple_test      # while (p > 0)
 Lcompute_lcm_multiple:
-    decl %ebx
-    mull %ecx
+    dec %ebx
+    mul %ecx
 Lcompute_lcm_multiple_test:
-    testl %ebx, %ebx
+    test %ebx, %ebx
     jg Lcompute_lcm_multiple
-    incl %ecx
-    cmpl $20, %ecx
+    inc %ecx
+    cmp $20, %ecx
     jle Lcompute_lcm_loop
     ret
 
@@ -80,16 +80,16 @@ start:
     call compute_powers
     call compute_lcm
 
-    movq %rsp, %rdi
-    subq $16, %rsp
-    movl %eax, %esi
+    mov %rsp, %rdi
+    sub $16, %rsp
+    mov %eax, %esi
     call uint_to_str_nl
 
-    movl %eax, %edx
-    movq %rdi, %rsi
+    mov %eax, %edx
+    mov %rdi, %rsi
     call write
 
-    addq $16, %rsp
+    add $16, %rsp
     call exit
 
 .data
