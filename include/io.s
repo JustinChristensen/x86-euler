@@ -4,8 +4,8 @@ L_STDOUT = 1
 # edx - string length
 # rsi - string pointer
 write:
-    movl $L_STDOUT, %edi
-    movl $L_SYS_WRITE, %eax
+    mov $L_STDOUT, %edi
+    mov $L_SYS_WRITE, %eax
     syscall
-    retq
+    ret
 

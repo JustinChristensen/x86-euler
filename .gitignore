@@ -2,10 +2,13 @@
 *.o
 *.dSYM
 src/*/*
-notes/
 !src/*/*.s
 !src/*/*.c
 !src/*/.*
+notes/*/*
+!notes/*/*.s
+!notes/*/*.c
+!notes/*/.*
 !Makefile
 optimized.s
 /*.s
