@@ -2,7 +2,6 @@
 .p2align 4
 
 /*
-
 Improvements to consider:
 1. Use multiplicative inverse instead of division
 2. Conditionally set the addend to 0 when neither i % 3 or i % 5 == 0 instead of jumping
@@ -10,7 +9,6 @@ Improvements to consider:
 
 .include "exit.s"
 .include "io.s"
-.include "string.s"
 
 # eax `mod` edi
 # eax - dividend
@@ -48,18 +46,7 @@ Lsum_multiples_loop_test:
 
 start:
     call sum_multiples
-
-    mov %rsp, %rdi
     mov %eax, %esi
-    sub $16, %rsp               # make space for the integer ascii string
-
-    call uint_to_str_nl         # convert answer to string
-
-    mov %rdi, %rsi
-    mov %eax, %edx
-    call write                  # write to stdout
-
-    add $16, %rsp               # reclaim string storage
-
+    call write_uint_nl
     call exit
 

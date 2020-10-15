@@ -3,7 +3,6 @@
 
 .include "exit.s"
 .include "io.s"
-.include "string.s"
 
 fp_ceil:
     mov $0xc800, %bx      # bx - rounding mode
@@ -130,21 +129,50 @@ Lherons_loop:
 
     ret
 
+print_result:
+    push %rbp
+    push %rbx
+    push %rcx
+    push %rsi
+    push %rdi
+    lea -1(%rsp), %rdi
+    sub $16, %rsp
+    mov %eax, %ebp
+    mov %ecx, %ebx
+
+    call write_uint                 # print out "n herons(n)\n"
+    call write_space
+    mov %ebp, %esi
+    call write_uint
+    call write_space
+    mov %ebx, %esi
+    call write_uint_nl
+
+    add $16, %rsp
+    pop %rdi
+    pop %rsi
+    pop %rcx
+    pop %rbx
+    pop %rbp
+    ret
+
 # [esi, ebp] - range of numbers to apply heron's method to
 average_iterations:
-    mov %ebp, %r9d
-    sub %esi, %r9d
-    inc %r9d                        # n = (ebp - esi) + 1
+    mov %ebp, %r14d
+    sub %esi, %r14d
+    inc %r11d                        # n = (ebp - esi) + 1
 Laverage_iterations_loop:
     call herons
-    add %ecx, %r10d
+    call print_result
+
+    add %ecx, %r15d
     inc %esi
     cmp %esi, %ebp
     jge Laverage_iterations_loop
 
-    mov %r9d, (%rdi)
+    mov %r14d, (%rdi)
     fildl (%rdi)
-    mov %r10d, (%rdi)
+    mov %r15d, (%rdi)
     fildl (%rdi)
     fdiv
 

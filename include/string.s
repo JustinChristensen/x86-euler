@@ -1,3 +1,8 @@
+.ifndef L_INCLUDE_STRING
+.set L_INCLUDE_STRING, 1
+
+.include "io.s"
+
 # rdi - buffer pointer
 # eax - running length for string
 newline:
@@ -35,3 +40,9 @@ Luint_to_str_loop:
     mov %r10d, %eax             # return length
     ret
 
+space:
+    mov $1, %eax
+    movb $' ', (%rdi)
+    ret
+
+.endif      # L_INCLUDE_STRING

@@ -3,7 +3,6 @@
 
 .include "exit.s"
 .include "io.s"
-.include "string.s"
 
 # eax - string length
 # rdi - string pointer
@@ -62,18 +61,7 @@ Llargest_palindrome_not:
 
 start:
     call largest_palindrome
-
-    mov %rsp, %rdi
     mov %eax, %esi
-    sub $16, %rsp          # make space for integer conversion
-
-    call uint_to_str_nl
-
-    mov %eax, %edx         # length
-    mov %rdi, %rsi         # string pointer
-    call write
-
-    add $16, %rsp          # reclaim stack space
-
+    call write_uint_nl
     call exit
 

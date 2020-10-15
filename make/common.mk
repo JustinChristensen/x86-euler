@@ -6,7 +6,7 @@ AS := as
 AS_FLAGS := -static -I$(TOPDIR)/include -Wall -Wextra
 
 LD := ld
-LD_FLAGS := -static
+LD_FLAGS := -static -dead_strip
 ifdef BYTE_ALIGN
 	LD_FLAGS += -segalign 1
 endif

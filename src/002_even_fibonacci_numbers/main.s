@@ -3,7 +3,6 @@
 
 .include "exit.s"
 .include "io.s"
-.include "string.s"
 
 sum_even_fibs:
     mov $1, %ebx       # i
@@ -28,17 +27,7 @@ Lsum_even_fibs_loop:
 
 start:
     call sum_even_fibs
-
-    mov %rsp, %rdi
     mov %eax, %esi
-    sub $16, %rsp          # make space for integer conversion
-    call uint_to_str_nl
-
-    mov %eax, %edx         # length
-    mov %rdi, %rsi         # string pointer
-    call write
-
-    add $16, %rsp          # reclaim stack space
-
+    call write_uint_nl
     call exit
 
