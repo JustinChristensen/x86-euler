@@ -14,11 +14,17 @@ Lround:
     fstcw 2(%rsp)
 
     fstcw (%rsp)
-    andw $0xf3ff, (%rsp)  # zero rounding bits
+    andw $0xf3ff, (%rsp)  # zero rounding bits (nearest)
+    # fldcw (%rsp)
+    # fld %st(0)
+    # frndint
+    # fcomip
+    # je Lround_end
+
     orw %bx, (%rsp)
     fldcw (%rsp)          # set rounding mode
     frndint
-
+# Lround_end:
     fldcw 2(%rsp)         # restore original
     add $4, %rsp
     ret
@@ -160,7 +166,7 @@ print_result:
 average_iterations:
     mov %ebp, %r14d
     sub %esi, %r14d
-    inc %r11d                        # n = (ebp - esi) + 1
+    inc %r14d                        # n = (ebp - esi) + 1
 Laverage_iterations_loop:
     call herons
     call print_result
@@ -178,17 +184,28 @@ Laverage_iterations_loop:
 
     ret
 
-# actual: 289363
-# expected: 288926
-# off by 437
-
 start:
     add $16, %rsp
+
+    # use double-precision for this
+    fstcw (%rsp)
+    andw $0xfcff, (%rsp)
+    orw $0x200, (%rsp)
+    fldcw (%rsp)
 
     mov $10000, %esi
     mov $99999, %ebp        # [esi, ebp]
     lea 12(%rsp), %rdi
     call average_iterations
+
+    # actual: 289363
+    # expected: 288926
+    # off by 437
+
+    # example of a value for which 80-bit precision causes an extra iteration in
+    # the herons loop over 64-bit precision
+    # mov $47400, %esi
+    # call herons
 
     sub $16, %rsp
     call exit
