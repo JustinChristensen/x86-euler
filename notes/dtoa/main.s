@@ -147,7 +147,7 @@ start:
 
     # -denorm
     fchs
-    fstl 8(%rsp)
+    fstpl 8(%rsp)
     mov 8(%rsp), %rsi
     or $0x1, %rsi
     call dtoa_write
