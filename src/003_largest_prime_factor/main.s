@@ -1,8 +1,4 @@
-.global start
 .p2align 4
-
-.include "exit.s"
-.include "io.s"
 
 # rdi - the number to compute the largest prime factor for
 # rax - largest prime factor result
@@ -31,6 +27,7 @@ Llargest_prime_loop_body:
 Llargest_prime_end:
     ret
 
+.global start
 start:
     mov $600851475143, %rdi
     call largest_prime

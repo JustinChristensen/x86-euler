@@ -1,8 +1,4 @@
-.global start
 .p2align 4
-
-.include "exit.s"
-.include "io.s"
 
 # eax - string length
 # rdi - string pointer
@@ -59,6 +55,7 @@ Llargest_palindrome_not:
     mov %r12d, %eax             # return max
     ret
 
+.global start
 start:
     call largest_palindrome
     mov %eax, %esi

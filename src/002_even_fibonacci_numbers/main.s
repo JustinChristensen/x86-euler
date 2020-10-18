@@ -1,8 +1,4 @@
-.global start
 .p2align 4
-
-.include "exit.s"
-.include "io.s"
 
 sum_even_fibs:
     mov $1, %ebx       # i
@@ -25,6 +21,7 @@ Lsum_even_fibs_loop:
 
     ret
 
+.global start
 start:
     call sum_even_fibs
     mov %eax, %esi

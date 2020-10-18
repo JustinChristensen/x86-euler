@@ -1,4 +1,3 @@
-.global start
 .p2align 4
 
 /*
@@ -6,9 +5,6 @@ Improvements to consider:
 1. Use multiplicative inverse instead of division
 2. Conditionally set the addend to 0 when neither i % 3 or i % 5 == 0 instead of jumping
 */
-
-.include "exit.s"
-.include "io.s"
 
 # eax `mod` edi
 # eax - dividend
@@ -44,6 +40,7 @@ Lsum_multiples_loop_test:
     mov %ebx, %eax
     ret
 
+.global start
 start:
     call sum_multiples
     mov %eax, %esi

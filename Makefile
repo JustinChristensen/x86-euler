@@ -1,6 +1,6 @@
 OBJDUMP := objdump
 OBJDUMP_FLAGS := --print-imm-hex
-TARGETS := $(wildcard src/*)
+TARGETS := include/ $(wildcard src/*)
 
 .PHONY: all
 all: $(TARGETS)

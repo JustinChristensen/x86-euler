@@ -1,8 +1,4 @@
-.global start
 .p2align 4
-
-.include "exit.s"
-.include "io.s"
 
 fp_ceil:
     mov $0xc800, %bx      # bx - rounding mode
@@ -195,6 +191,7 @@ Laverage_iterations_loop:
 
     ret
 
+.global start
 start:
     add $16, %rsp
 

@@ -1,16 +1,15 @@
-.ifndef L_INCLUDE_STRING
-.set L_INCLUDE_STRING, 1
-
-.include "io.s"
+.p2align 4
 
 # rdi - buffer pointer
 # eax - running length for string
+.global newline
 newline:
     inc %rax
     movb $'\n', (%rdi)
     dec %rdi
     ret
 
+.global uint_to_str_nl
 uint_to_str_nl:
     xor %eax, %eax
     call newline
@@ -21,6 +20,7 @@ uint_to_str_nl:
 # rdi - pointer to end of string storage and result pointer after decrementing by length
 # esi - unsigned integer to stringify
 # eax - length of string
+.global uint_to_str
 uint_to_str:
     xor %eax, %eax
 _uint_to_str:
@@ -40,9 +40,8 @@ Luint_to_str_loop:
     mov %r10, %rax             # return length
     ret
 
+.global space
 space:
     mov $1, %eax
     movb $' ', (%rdi)
     ret
-
-.endif      # L_INCLUDE_STRING

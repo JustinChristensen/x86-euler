@@ -1,9 +1,12 @@
 TOPDIR ?= .
 S_SOURCE ?= main.s
+S_OBJS ?= exit.o
 C_SOURCE ?= main.c
 
+S_OBJS := $(addprefix $(TOPDIR)/include/, $(S_OBJS))
+
 AS := as
-AS_FLAGS := -static -I$(TOPDIR)/include -Wall -Wextra
+AS_FLAGS := -static -Wall -Wextra
 
 LD := ld
 LD_FLAGS := -static -dead_strip
@@ -19,15 +22,15 @@ ifndef NO_DEBUG
 	AS_FLAGS += -g
 endif
 
-.PHONY: all
-all: $(S_PROG)
-
-$(S_PROG): $(S_SOURCE)
-	$(AS) $(AS_FLAGS) -o $@.o $^
-	$(LD) $(LD_FLAGS) -o $@ $@.o
+$(S_PROG): $(S_SOURCE) $(S_OBJS)
+	$(AS) -I$(TOPDIR)/include $(AS_FLAGS) -o $@.o $(S_SOURCE)
+	$(LD) $(LD_FLAGS) -o $@ $@.o $(S_OBJS)
 ifndef NO_DEBUG
 	dsymutil $@
 endif
+
+%.o: %.s
+	$(AS) $(AS_FLAGS) -o $@ $<
 
 ifdef C_PROG
 $(C_PROG): $(C_SOURCE)

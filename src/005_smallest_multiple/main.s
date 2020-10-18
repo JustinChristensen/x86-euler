@@ -1,9 +1,4 @@
-.global start
 .p2align 4
-
-.include "exit.s"
-.include "io.s"
-.include "string.s"
 
 compute_powers:
     lea powers(%rip), %rdi             # powers
@@ -60,6 +55,7 @@ Lcompute_lcm_multiple_test:
     jle Lcompute_lcm_loop
     ret
 
+.global start
 start:
     call compute_powers
     call compute_lcm
