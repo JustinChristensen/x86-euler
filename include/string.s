@@ -6,7 +6,7 @@
 # rdi - buffer pointer
 # eax - running length for string
 newline:
-    inc %eax
+    inc %rax
     movb $'\n', (%rdi)
     dec %rdi
     ret
@@ -24,20 +24,20 @@ uint_to_str_nl:
 uint_to_str:
     xor %eax, %eax
 _uint_to_str:
-    mov %eax, %r10d             # length
-    mov %esi, %eax              # edx:eax
-    mov $10, %r11d              # divisor
+    mov %rax, %r10              # length
+    mov %rsi, %rax              # edx:eax
+    mov $10, %r11               # divisor
 Luint_to_str_loop:
     xor %edx, %edx              # clear edx, otherwise quotients >= 2^w result in a floating point exception with DIV
-    div %r11d
+    div %r11
     add $'0', %dl
     mov %dl, (%rdi)
     dec %rdi                    # pointer--
-    inc %r10d                   # length++
-    test %eax, %eax
+    inc %r10                    # length++
+    test %rax, %rax
     jg Luint_to_str_loop         # quotient > 0
     inc %rdi
-    mov %r10d, %eax             # return length
+    mov %r10, %rax             # return length
     ret
 
 space:
