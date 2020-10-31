@@ -1,7 +1,7 @@
 .p2align 4
 
 fp_ceil:
-    mov $0xc800, %bx      # bx - rounding mode
+    mov $0x800, %bx      # bx - rounding mode
     jmp Lround
 fp_floor:
     mov $0xc00, %bx
@@ -11,16 +11,10 @@ Lround:
 
     fstcw (%rsp)
     andw $0xf3ff, (%rsp)  # zero rounding bits (nearest)
-    # fldcw (%rsp)
-    # fld %st(0)
-    # frndint
-    # fcomip
-    # je Lround_end
 
     orw %bx, (%rsp)
     fldcw (%rsp)          # set rounding mode
     frndint
-# Lround_end:
     fldcw 2(%rsp)         # restore original
     add $4, %rsp
     ret
@@ -69,6 +63,68 @@ fp_pow:
     fstp %st(1)
     ret
 
+# rbx - base
+# rcx - exponent
+# rax - return integer
+ipow:
+    push %rbp
+    push %rdx
+    mov $1, %rbp        # result
+    xor %rdx, %rdx
+ipow_loop:
+    test $1, %rcx
+    jz ipow_shift
+
+    mov %rbp, %rax
+    imul %rbx
+    mov %rax, %rbp      # result *= base
+
+ipow_shift:
+    shr %ecx
+    jz ipow_end
+
+    mov %rbx, %rax
+    mov %rbx, %rax
+    imul %rbx
+    mov %rax, %rbx      # base *= base
+
+    jmp ipow_loop
+ipow_end:
+    mov %rbp, %rax
+    pop %rdx
+    pop %rbp
+    ret
+
+# rdi - buffer to fill
+# rsi - requested precision
+# st(0) - float to convert
+f2s:
+    sub $32, %rsp
+    fstcw 2(%rsp)               # restore original control word after all is said and done
+
+    fstcw (%rsp)
+    andw $0xf3ff, (%rsp)        # zero rounding bits (round to nearest)
+    orw %0xc00, (%rsp)          # round to zero
+    fldcw (%rsp)                # set rounding mode
+
+    mov %rsi, 24(%rsp)          # stash rsi for later
+    fist 16(%rsp)               #
+
+    mov 16(%rsp), %rsi
+    call fp_ndigits             # rax is now the integer component length
+
+    mov $MAX_FLOAT_LEN, %rsi
+    sub %rax, %rsi
+    cmp 24(%rsp), %rsi          # compare requested precision to available precision
+    cmovg 24(%rsp), %rsi
+
+    fld %st(0)
+
+    fldcw 2(%rsp)         # restore original rounding mode
+    add $32, %rsp
+    ret
+
+
 # rdi - pointer to temporary integer storage
 # k * 10^((d - s)/2)
 herons_term0:
@@ -103,10 +159,10 @@ herons_term0:
 # rdi - temporary integer storage
 # x_k+1 = floor((x_k + ceil(n / x_k)) / 2)
 herons:
-    # call herons_term0       # prev
+    call herons_term0           # either compute the first term
 
-    movq $7000000, (%rdi)
-    fildq (%rdi)
+    # movq $7000000, (%rdi)     # OR hardcode
+    # fildq (%rdi)
 
     xor %ecx, %ecx
 Lherons_loop:
@@ -177,7 +233,7 @@ average_iterations:
     inc %r14
 Laverage_iterations_loop:
     call herons
-    call maybe_print_result
+#     call maybe_print_result
     add %rcx, %r15
     inc %rsi
     cmp %rsi, %rbp
@@ -195,14 +251,19 @@ Laverage_iterations_loop:
 start:
     add $16, %rsp
 
+    # this can/should be done in terms of integer operations
+    # i.e. division rounded to zero, but I was feeling like doing it in terms of x87 fpu ops
+    # also, this only works for the example solution, the real problem requires some sort
+    # of fancy number theory trick, because 10^14-1 - 10^13 takes too long to brute force
+
     # use double-precision for this
     fstcw (%rsp)
     andw $0xfcff, (%rsp)
     orw $0x200, (%rsp)
     fldcw (%rsp)
 
-    mov $10000000000000, %rsi
-    mov $99999999999999, %rbp        # [rsi, rbp]
+    mov $10000, %rsi
+    mov $99999, %rbp        # [rsi, rbp]
     lea 8(%rsp), %rdi
     call average_iterations
 
@@ -214,6 +275,9 @@ start:
     # the herons loop over 64-bit precision
     # mov $47400, %rsi
     # call herons
+
+    movl $10, %edi          # precision
+    call f2s
 
     sub $16, %rsp
     call exit
