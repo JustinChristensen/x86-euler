@@ -1,33 +1,5 @@
 .p2align 4
 
-fp_ceil:
-    mov $0x800, %bx      # bx - rounding mode
-    jmp Lround
-fp_floor:
-    mov $0xc00, %bx
-Lround:
-    sub $4, %rsp
-    fstcw 2(%rsp)
-
-    fstcw (%rsp)
-    andw $0xf3ff, (%rsp)  # zero rounding bits (nearest)
-
-    orw %bx, (%rsp)
-    fldcw (%rsp)          # set rounding mode
-    frndint
-    fldcw 2(%rsp)         # restore original
-    add $4, %rsp
-    ret
-
-# st(0) = log10(st(0))
-fp_log10:
-    fldl2t
-    fld1
-    fdiv                  # a = 1 / log2(10)
-    fxch
-    fyl2x                 # b = a * log2(x)
-    ret
-
 # rsi - input integer
 # rax - number of digits for integer
 fp_ndigits:
@@ -45,22 +17,6 @@ fp_ndigits:
     mov 8(%rsp), %rax
 
     add $16, %rsp
-    ret
-
-# st(0) = x
-# st(1) = y
-# x^y = 2^(y * log2(x))
-fp_pow:
-    fyl2x           # a = y * log2(x)
-    fld %st(0)      # dup
-    call fp_floor   # b = floor(a)
-    fxch
-    fprem1          # c = a % b
-    f2xm1           # d = 2^c - 1
-    fld1
-    fadd            # e = d + 1
-    fscale          # e * 2^b
-    fstp %st(1)
     ret
 
 # rbx - base
@@ -95,35 +51,14 @@ ipow_end:
     pop %rbp
     ret
 
-# rdi - buffer to fill
-# rsi - requested precision
-# st(0) - float to convert
-f2s:
-    sub $32, %rsp
-    fstcw 2(%rsp)               # restore original control word after all is said and done
-
-    fstcw (%rsp)
-    andw $0xf3ff, (%rsp)        # zero rounding bits (round to nearest)
-    orw %0xc00, (%rsp)          # round to zero
-    fldcw (%rsp)                # set rounding mode
-
-    mov %rsi, 24(%rsp)          # stash rsi for later
-    fist 16(%rsp)               #
-
-    mov 16(%rsp), %rsi
-    call fp_ndigits             # rax is now the integer component length
-
-    mov $MAX_FLOAT_LEN, %rsi
-    sub %rax, %rsi
-    cmp 24(%rsp), %rsi          # compare requested precision to available precision
-    cmovg 24(%rsp), %rsi
-
-    fld %st(0)
-
-    fldcw 2(%rsp)         # restore original rounding mode
-    add $32, %rsp
+# rax - signed input integer
+abs:
+    push %rsi
+    mov %rax, %rsi
+    neg %rax
+    cmovl %rsi, %rax
+    pop %rsi
     ret
-
 
 # rdi - pointer to temporary integer storage
 # k * 10^((d - s)/2)
