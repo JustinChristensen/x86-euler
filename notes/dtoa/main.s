@@ -6,13 +6,15 @@
 .set L_EXP_MASK, 0x7FF0000000000000
 .set L_SIG_MASK, 0xFFFFFFFFFFFFF
 
-# 1 10000000000 1001001000011111101101010100010001000010110100011000
-
 # this version uses multiplication to scale the fractional part of the floating point value
 # and so it can't handle the full range of values a double precision floating point value can represent
 # buyer beware
+# st(0) - float to stringify
+# rbx - requested fractional precision
+# rdi - pointer to end of buffer (points to start on return)
+# rax - length of string
 dtoa:
-    push %rbx
+    push %rsi
     push %rcx
     push %rdx
     push %r10
@@ -24,9 +26,9 @@ dtoa:
     fstl 8(%rsp)
     mov 8(%rsp), %rbp
     # detecting +-inf, nan, and +-0
-    mov $L_EXP_MASK, %rbx
-    and %rbp, %rbx                  # exponent
-    shr $52, %rbx
+    mov $L_EXP_MASK, %rsi
+    and %rbp, %rsi                  # exponent
+    shr $52, %rsi
     mov $L_SIG_MASK, %rdx
     and %rbp, %rdx                  # significand
     mov $L_SIGN_MASK, %r11
@@ -34,9 +36,9 @@ dtoa:
     shr $63, %r11
 
     std                             # set direction flag for string copies below
-    test %rbx, %rbx
+    test %rsi, %rsi
     jz Ldtoa_maybe_zero             # zero exponent
-    cmp $2047, %rbx
+    cmp $2047, %rsi
     jz Ldtoa_inf_nan
     jmp Ldtoa_norm_denorm
 Ldtoa_maybe_zero:
@@ -70,34 +72,32 @@ Ldtoa_norm_denorm:
     fld %st(0)
     fabs
     fld %st(0)
-
-    call fp_floor
-    fxch
-    fprem1
-    fxch                            # top = integer, top - 1 = fractional
-    fistpq 8(%rsp)                  # store integer
+    fisttpq 8(%rsp)                 # floor and store
+    fisubl 8(%rsp)
     mov 8(%rsp), %rdx
 
     mov $L_MAX_FLOAT_LEN, %rax
-    test %rsi, %rsi
-    cmovz %rax, %rsi
-    cmp %rax, %rsi                  # compare requested precision to available precision
-    cmovg %rax, %rsi
+    test %rbx, %rbx
+    cmovz %rax, %rbx
+    cmp %rax, %rbx                  # compare requested precision to available precision
+    cmovg %rax, %rbx
+    mov %rbx, 8(%rsp)               # restore rbx after ipow
+    mov %rbx, %rcx
     mov $10, %rbx
-    mov %rsi, %rcx
     call ipow                       # scale factor
+    mov 8(%rsp), %rbx
     mov %rax, 8(%rsp)
     fildq 8(%rsp)
     fmul                            # multiply by fractional component
     fistpq 8(%rsp)
     mov 8(%rsp), %rax               # fractional component
-    mov %rdx, %rsi                  # stash int component
+    mov %rdx, %rcx                  # stash int component
 
-    # rdx - integer part, rsi - fractional part
-    mov $10, %rbx
+    # rdx - integer part, rcx - fractional part
+    mov $10, %rsi
 Ldtoa_fraction_loop:                # handle the fractional part
     xor %rdx, %rdx
-    div %rbx
+    div %rsi
     movb %dl, (%rdi)
     addb $'0', (%rdi)
     dec %rdi
@@ -109,10 +109,10 @@ Ldtoa_fraction_loop:                # handle the fractional part
     dec %rdi
     inc %r10
 
-    mov %rsi, %rax
+    mov %rcx, %rax
 Ldtoa_int_loop:                     # handle the integer part
     xor %rdx, %rdx
-    div %rbx
+    div %rsi
     movb %dl, (%rdi)
     addb $'0', (%rdi)
     dec %rdi
@@ -134,7 +134,7 @@ Ldtoa_after_sign:
     pop %r10
     pop %rdx
     pop %rcx
-    pop %rbx
+    pop %rsi
     ret
 
 dtoa_write:
