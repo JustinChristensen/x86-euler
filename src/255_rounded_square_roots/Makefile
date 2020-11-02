@@ -2,9 +2,11 @@ TOPDIR := ../..
 S_PROG := rounded_sqrts
 C_PROG := $(S_PROG)_c
 
-S_OBJS := exit.o io.o string.o
+S_OBJS := exit.o float.o int.o io.o string.o
 
 include $(TOPDIR)/make/common.mk
 
 test: $(S_PROG)
-	true
+	output=$$(./$(S_PROG)) && echo $$output | grep '3.2102888889' &> /dev/null
+
+

@@ -170,8 +170,8 @@ start:
     # mov $47400, %rsi
     # call herons
 
-    movl $10, %edi          # precision
-    call f2s
+    mov $10, %rbx          # precision
+    call dtoa_write
 
     sub $16, %rsp
     call exit
