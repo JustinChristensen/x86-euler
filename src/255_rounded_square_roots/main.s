@@ -19,47 +19,6 @@ fp_ndigits:
     add $16, %rsp
     ret
 
-# rbx - base
-# rcx - exponent
-# rax - return integer
-ipow:
-    push %rbp
-    push %rdx
-    mov $1, %rbp        # result
-    xor %rdx, %rdx
-ipow_loop:
-    test $1, %rcx
-    jz ipow_shift
-
-    mov %rbp, %rax
-    imul %rbx
-    mov %rax, %rbp      # result *= base
-
-ipow_shift:
-    shr %ecx
-    jz ipow_end
-
-    mov %rbx, %rax
-    mov %rbx, %rax
-    imul %rbx
-    mov %rax, %rbx      # base *= base
-
-    jmp ipow_loop
-ipow_end:
-    mov %rbp, %rax
-    pop %rdx
-    pop %rbp
-    ret
-
-# rax - signed input integer
-abs:
-    push %rsi
-    mov %rax, %rsi
-    neg %rax
-    cmovl %rsi, %rax
-    pop %rsi
-    ret
-
 # rdi - pointer to temporary integer storage
 # k * 10^((d - s)/2)
 herons_term0:

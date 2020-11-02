@@ -1,6 +1,10 @@
 .p2align 4
 
+# x87 float math routines
+
 # st(0) = floor/ceil(st(0))
+.global fp_ceil
+.global fp_floor
 fp_ceil:
     mov $0x800, %bx      # bx - rounding mode
     jmp Lround
@@ -21,6 +25,7 @@ Lround:
     ret
 
 # st(0) = log10(st(0))
+.global fp_log10
 fp_log10:
     fldl2t
     fld1
@@ -32,6 +37,7 @@ fp_log10:
 # st(0) = x
 # st(1) = y
 # x^y = 2^(y * log2(x))
+.global fp_pow
 fp_pow:
     fyl2x           # a = y * log2(x)
     fld %st(0)      # dup
