@@ -18,8 +18,8 @@ uint_to_str_nl:
 
 # length = to_str &rdi esi
 # rdi - pointer to end of string storage and result pointer after decrementing by length
-# esi - unsigned integer to stringify
-# eax - length of string
+# rsi - unsigned integer to stringify
+# rax - length of string
 .global uint_to_str
 uint_to_str:
     xor %eax, %eax

@@ -7,9 +7,11 @@ L_STDOUT = 1
 # rsi - string pointer
 .global write
 write:
+    push %rcx
     mov $L_STDOUT, %edi
     mov $L_SYS_WRITE, %eax
     syscall
+    pop %rcx
     ret
 
 # TODO: think about whether it makes sense to turn this into
@@ -26,6 +28,8 @@ write_uint_nl:
 write_uint:
     lea uint_to_str(%rip), %rax
 Lwrite_uint:
+    push %rsi
+    push %rdx
     mov %rsp, %rdi
     sub $16, %rsp               # make space for the integer ascii string
     dec %rdi
@@ -37,4 +41,6 @@ Lwrite_uint:
     call write                  # write to stdout
 
     add $16, %rsp               # reclaim string storage
+    pop %rdx
+    pop %rsi
     ret
