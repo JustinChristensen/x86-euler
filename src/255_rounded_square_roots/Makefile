@@ -2,7 +2,7 @@ TOPDIR := ../..
 S_PROG := rounded_sqrts
 C_PROG := $(S_PROG)_c
 
-S_OBJS := exit.o float.o int.o io.o string.o
+S_OBJS := exit.o float.o int.o io.o io_utils.o string.o
 
 include $(TOPDIR)/make/common.mk
 

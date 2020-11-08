@@ -60,16 +60,9 @@ start:
     call compute_powers
     call compute_lcm
 
-    mov %rsp, %rdi
-    sub $16, %rsp
     mov %eax, %esi
-    call uint_to_str_nl
+    call write_uint_nl
 
-    mov %eax, %edx
-    mov %rdi, %rsi
-    call write
-
-    add $16, %rsp
     call exit
 
 .data

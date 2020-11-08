@@ -1,5 +1,5 @@
 TOPDIR ?= ..
-S_OBJS ?= exit.o float.o io.o string.o
+S_OBJS ?= base.o exit.o float.o io.o io_utils.o string.o
 
 .PHONY: all
 all: $(S_OBJS)

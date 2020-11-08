@@ -171,7 +171,7 @@ start:
     # call herons
 
     mov $10, %rbx          # precision
-    call dtoa_write
+    call dtoa_write_stdout
 
     sub $16, %rsp
     call exit

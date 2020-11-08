@@ -185,8 +185,8 @@ Ldtoa_after_sign:
     pop %rsi
     ret
 
-.global dtoa_write
-dtoa_write:
+.global dtoa_write_stdout
+dtoa_write_stdout:
     lea -1(%rsp), %rdi
     sub $64, %rsp
 
@@ -197,7 +197,7 @@ dtoa_write:
 
     mov %rax, %rdx
     mov %rdi, %rsi
-    call write
+    call write_stdout
     add $64, %rsp
     ret
 

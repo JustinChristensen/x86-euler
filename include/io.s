@@ -9,46 +9,23 @@ STDOUT = 1
 OPEN_RDONLY = 0x0000
 OPEN_WRONLY = 0x0001
 
+# edi - file descriptor
 # edx - string length
 # rsi - string pointer
 .global write
 write:
     push %rcx
-    mov $STDOUT, %edi
     mov $L_SYS_WRITE, %eax
     syscall
     pop %rcx
     ret
 
-# TODO: think about whether it makes sense to turn this into
-# write :: (a -> String) -> IO () or not
-.global write_space
-write_space:
-    lea space(%rip), %rax
-    jmp Lwrite_uint
-.global write_uint_nl
-write_uint_nl:
-    lea uint_to_str_nl(%rip), %rax
-    jmp Lwrite_uint
-.global write_uint
-write_uint:
-    lea uint_to_str(%rip), %rax
-Lwrite_uint:
-    push %rsi
-    push %rdx
-    mov %rsp, %rdi
-    sub $16, %rsp               # make space for the integer ascii string
-    dec %rdi
-
-    call *%rax                  # convert answer to string
-
-    mov %rdi, %rsi
-    mov %eax, %edx
-    call write                  # write to stdout
-
-    add $16, %rsp               # reclaim string storage
-    pop %rdx
-    pop %rsi
+# edx - string length
+# rsi - string pointer
+.global write_stdout
+write_stdout:
+    mov $STDOUT, %edi
+    call write
     ret
 
 # rdi - path
