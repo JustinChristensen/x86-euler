@@ -36,6 +36,13 @@ Lprint_loop:
     cmp $8, %rcx
     jnz Lprint_loop
 
+    movl $2495, 8(%rsp)
+    movl $4095, 12(%rsp)
+    movq 8(%rsp), %mm0
+    movl $3333, 12(%rsp)
+    movq 8(%rsp), %mm1
+    pcmpeqd %mm0, %mm1
+
     add $32, %rsp
     call exit
 

@@ -45,3 +45,17 @@ space:
     mov $1, %eax
     movb $' ', (%rdi)
     ret
+
+# rsi - pointer to string
+# rax - string length
+.global strlen
+strlen:
+    xor %rax, %rax
+    jmp Lstrlen_loop_test
+Lstrlen_loop:
+    inc %rax
+Lstrlen_loop_test:
+    cmpb $0, (%rsi, %rax)
+    jnz Lstrlen_loop
+    ret
+
