@@ -30,7 +30,7 @@ ifndef NO_DEBUG
 endif
 
 %.o: %.s
-	$(AS) $(AS_FLAGS) -o $@ $<
+	$(AS) -I$(TOPDIR)/include $(AS_FLAGS) -o $@ $<
 
 ifdef C_PROG
 $(C_PROG): $(C_SOURCE)

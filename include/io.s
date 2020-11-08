@@ -5,9 +5,7 @@ L_SYS_OPEN = 0x2000005
 L_SYS_READ = 0x2000003
 L_SYS_FSTAT = 0x20000bd
 
-STDOUT = 1
-OPEN_RDONLY = 0x0000
-OPEN_WRONLY = 0x0001
+.include "syms.s"
 
 # edi - file descriptor
 # edx - string length
@@ -31,7 +29,6 @@ write_stdout:
 # rdi - path
 # esi - open flags
 # eax - return file descriptor
-# eax - return status
 .global open
 open:
     mov $L_SYS_OPEN, %eax
