@@ -46,20 +46,21 @@ start:
     cmpq %rax, (%rbp)
     je Lstart_png
     call not_png
+
 Lstart_png:
     add $8, %rbp        # skip over png signature
+    mov $4, %edx        # TEMP: chunk type
     jmp L_png_loop_test
 L_png_loop:
-    mov %ecx, %esi
-    call write_uint_nl
+    lea 4(%rbp), %rsi
+    call putstrln
     movbe (%rbp), %ebx
     lea 12(%rbp, %rbx), %rbp      # increment pointer (length) + length + type + crc
 L_png_loop_test:
-    mov 4(%rbp), %ecx
-    cmp $L_PNG_IEND, %ecx
+    cmpl $L_PNG_IEND, 4(%rbp)
     jne L_png_loop
-    mov %ecx, %esi
-    call write_uint_nl           # print end
+    lea 4(%rbp), %rsi
+    call putstrln           # print end
 
 Lstart_end:
     call exit

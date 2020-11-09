@@ -32,3 +32,20 @@ Lwrite_uint:
     pop %rsi
     ret
 
+.global putstrln
+putstrln:
+    push %rdx
+    push %rdi
+    sub $16, %rsp
+    call write_stdout
+    mov %rax, 4(%rsp)
+    movb $'\n', (%rsp)
+    mov %rsp, %rsi
+    mov $1, %edx
+    call write_stdout
+    add 4(%rsp), %rax
+    add $16, %rsp
+    pop %rdi
+    pop %rdx
+    ret
+
