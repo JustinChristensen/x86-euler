@@ -13,13 +13,15 @@ not_png:
     call write_stdout
     call exit                       # TODO: exit nonzero
 
-.global start
-start:
-    mov (%rsp), %rbx                # argc
+.global _main
+_main:
+    # mov (%rsp), %rbx                # argc (system v start)
+    mov %rdi, %rbx                    # dynamic main
     cmp $1, %rbx
     jle Lstart_end
 
-    mov 16(%rsp), %rdi              # argv[0]
+    # mov 16(%rsp), %rdi              # argv[0] (system v start)
+    mov 8(%rsi), %rdi
     mov $OPEN_RDONLY, %esi
     call open
     mov %eax, %ebp                  # file descriptor

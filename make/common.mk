@@ -6,12 +6,17 @@ C_SOURCE ?= main.c
 S_OBJS := $(addprefix $(TOPDIR)/include/, $(S_OBJS))
 
 AS := as
-AS_FLAGS := -static -Wall -Wextra
+AS_FLAGS := -Wall -Wextra
 
 LD := ld
-LD_FLAGS := -static -dead_strip
+LD_FLAGS := -dead_strip
 ifdef BYTE_ALIGN
 	LD_FLAGS += -segalign 1
+endif
+
+ifndef DYNAMIC
+	AS_FLAGS += -static
+	LD_FLAGS += -static
 endif
 
 CFLAGS := -O -Wall -Wextra
@@ -24,7 +29,7 @@ endif
 
 $(S_PROG): $(S_SOURCE) $(S_OBJS)
 	$(AS) -I$(TOPDIR)/include $(AS_FLAGS) -o $@.o $(S_SOURCE)
-	$(LD) $(LD_FLAGS) -o $@ $@.o $(S_OBJS)
+	$(LD) $(LD_FLAGS) -o $@ $@.o $(S_OBJS) $(LIBS)
 ifndef NO_DEBUG
 	dsymutil $@
 endif
