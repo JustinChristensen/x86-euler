@@ -49,6 +49,6 @@ endif
 
 .PHONY: clean
 clean:
-	rm -rf *.o *.dSYM $(C_PROG) $(S_PROG) optimized.s
+	rm -rf *.o *.dSYM $(C_PROG) $(S_PROG) optimized.s $(CLEAN)
 
 
