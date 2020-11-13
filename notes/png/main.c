@@ -15,6 +15,19 @@ enum chunk_type {
     IEND = 0x444e4549
 };
 
+union chunk_data {
+    void *data;
+    struct {
+        uint32_t width;
+        uint32_t height;
+        uint8_t bit_depth;
+        uint8_t color_type;
+        uint8_t compression_method;
+        uint8_t filter_method;
+        uint8_t interlace_method;
+    };
+};
+
 struct chunk {
     uint32_t length;
     enum chunk_type type;
@@ -35,8 +48,44 @@ static struct chunk as_chunk(unsigned char *png) {
     return c;
 }
 
-static void next_chunk(struct chunk *curr) {
-    *curr = as_chunk(curr->next);
+static union chunk_data chunk_data(struct chunk *chunk) {
+    union chunk_data data;
+
+    unsigned char *d = chunk->data;
+
+    switch (chunk->type) {
+        case IHDR:
+            data.width = ntohl(*(uint32_t *) d), d += 4;
+            data.height = ntohl(*(uint32_t *) d), d += 4;
+            data.bit_depth = *d++;
+            data.color_type = *d++;
+            data.compression_method = *d++;
+            data.filter_method = *d++;
+            data.interlace_method = *d++;
+            break;
+        default:
+            data.data = d;
+            break;
+    }
+
+    return data;
+}
+
+void print_chunk_data(FILE *handle, enum chunk_type type, union chunk_data *data) {
+    switch (type) {
+        case IHDR:
+            fprintf(handle, "  width: %u\n  height: %u\n  bit_depth: %hhu\n  color_type: %hhu\n"
+                   "  compression_method: %hhu\n  filter_method: %hhu\n  interlace_method: %hhu\n",
+                   data->width, data->height, data->bit_depth, data->color_type,
+                   data->compression_method, data->filter_method, data->interlace_method);
+            break;
+        default:
+            break;
+    }
+}
+
+static void next_chunk(struct chunk *chunk) {
+    *chunk = as_chunk(chunk->next);
 }
 
 int main(int argc, char *argv[]) {
@@ -102,7 +151,12 @@ int main(int argc, char *argv[]) {
     inflateInit(&strm);
 
     while (c.type != IEND) {
-        if (c.type == IDAT) {
+        printf("%.4s %d\n", (char *) &c.type, c.length);
+
+        if (c.type == IHDR) {
+            union chunk_data data = chunk_data(&c);
+            print_chunk_data(stdout, c.type, &data);
+        } else if (c.type == IDAT) {
             strm.next_in = c.data;
             strm.avail_in = c.length;
             strm.next_out = buf;
@@ -110,12 +164,11 @@ int main(int argc, char *argv[]) {
 
             int ret;
             if ((ret = inflate(&strm, Z_NO_FLUSH)) == Z_DATA_ERROR) {
-                printf("%s\n", strm.msg);
+                printf("ret: %d, msg: %s\n", ret, strm.msg);
                 break;
             } else {
-                printf("%.4s %d %u -> %lu\n", (char *) &c.type, ret, c.length, strm.total_out);
-                // for (unsigned long i = 0; i < strm.total_out; i++) printf("%.2x ", buf[i]);
-                // printf("\n");
+                printf("ret: %d, inflated %lu bytes\n", ret, strm.total_out);
+
                 for (int i = 0; i < 12; i++) {
                     for (int j = i * 32; j < (i + 1) * 32; j++) printf("%.2x ", buf[j]);
                     printf("\n");
